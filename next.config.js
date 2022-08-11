@@ -1,7 +1,23 @@
-/** @type {import('next').NextConfig} */
+/** @format */
+
+/**
+ * @format
+ * @type {import('next').NextConfig}
+ */
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
 
-module.exports = nextConfig
+  images: {
+    domains: ["rb.gy", "image.tmdb.org"],
+  },
+};
+
+module.exports = nextConfig;
+
+// module.exports = {
+//   images: {
+//     domains: ["rb.gy", "image.tmdb.org"],
+//   },
+// };

@@ -1,10 +1,26 @@
 /** @format */
 
+import { async } from "@firebase/util";
+import { getSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
+import Brand from "../components/brand";
 import { Header } from "../components/Header";
+import Login from "../components/Login";
+import Movies from "../components/moviesColletion";
+import Shows from "../components/showsCollection";
+import Show from "../components/showsCollection";
+import Slider from "../components/slider";
 
-export default function Home() {
+export default function Home({
+  popularMovies,
+  popularShows,
+  top_ratedMovies,
+  top_ratedShows,
+}) {
+  let session = true;
+  console.log(popularMovies);
+
   return (
     <div className="">
       <Head>
@@ -14,6 +30,63 @@ export default function Home() {
       </Head>
 
       <Header />
+
+      {!session ? (
+        <Login />
+      ) : (
+        <main className="relative min-h-screen after:bg-home after:bg-fixed  after:absolute after:inset-0 after:z-[-1]">
+          <Slider />
+          <Brand />
+          <Movies results={popularMovies} title="Popular Movies" />
+          <Shows results={popularShows} title="Popular Shows" />
+
+          <Movies results={top_ratedMovies} title="Top rated Movies" />
+          <Shows results={top_ratedShows} title="Top rated Shows" />
+        </main>
+      )}
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  const [
+    popularMoviesRes,
+    popularShowsRes,
+    top_ratedMoviesRes,
+    top_ratedShowsRes,
+  ] = await Promise.all([
+    fetch(
+      ` https://api.themoviedb.org/3/movie/popular?api_key=${process.env.API_KEY}&language=en-US&page=1`
+    ),
+    fetch(
+      `https://api.themoviedb.org/3/tv/popular?api_key=${process.env.API_KEY}&language=en-US&page=1`
+    ),
+
+    fetch(
+      `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.API_KEY}&language=en-US&page=1`
+    ),
+    fetch(
+      `https://api.themoviedb.org/3/tv/top_rated?api_key=${process.env.API_KEY}&language=en-US&page=1`
+    ),
+  ]);
+
+  const [popularMovies, popularShows, top_ratedMovies, top_ratedShows] =
+    await Promise.all([
+      popularMoviesRes.json(),
+      popularShowsRes.json(),
+      top_ratedMoviesRes.json(),
+      top_ratedShowsRes.json(),
+    ]);
+
+  return {
+    props: {
+      session,
+      popularMovies: popularMovies.results,
+      popularShows: popularShows.results,
+      top_ratedMovies: top_ratedMovies.results,
+      top_ratedShows: top_ratedShows.results,
+    },
+  };
 }
