@@ -1,5 +1,7 @@
 /** @format */
 
+// /** @format */
+
 import Head from "next/head";
 import { Header } from "../../components/Header";
 import Image from "next/image";
@@ -63,6 +65,12 @@ function movie({ result }) {
               <img src="/images/group-icon.svg" alt="" />
             </div>
           </div>
+
+          <p className="text-xs md:text-sm">
+            {result.release_date || result.first_air_date} {" "} 
+            {Math.floor(result.runtime / 60)}h:{result.runtime % 60}m {" "}
+            {result.genres.map((genre) => genre.name + " ")} {" "}
+          </p>
         </div>
       </section>
     </>
@@ -84,3 +92,52 @@ export async function getServerSideProps(context) {
     },
   };
 }
+
+// import Head from "next/head";
+// import { Header } from "../../components/Header";
+// import Image from "next/image";
+
+// function movie({ result }) {
+//   console.log(result);
+//   const BASE_URL = "https://image.tmdb.org/t/p/original/";
+
+//   return (
+//     <div>
+//       <Head>
+//         <title>{result.title || result.original_name}</title>
+//       </Head>
+//       <Header />
+//       <section>
+//         <div>
+//           <Image
+//             src={
+//               `${BASE_URL}${result.backdrop_path || result.poster_path}` ||
+//               `${BASE_URL}${result.poster_path}`
+//             }
+//             layout="fill"
+//             objectFit="cover"
+//           />
+//         </div>
+//         <div className="absolute inset-y-28 md:inset-y-auto mdbottom-10">
+//           <h1>{result.title || result.original_name}</h1>
+//         </div>
+//       </section>
+//     </div>
+//   );
+// }
+
+// export default movie;
+
+// export async function getServerSideProps(context) {
+//   //const id = context.query.id
+//   const { id } = context.query; /*destructured*/
+//   const request = await fetch(
+//     `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.API_KEY}&language=en-US&append_to_response=videos`
+//   ).then((response) => response.json());
+
+//   return {
+//     props: {
+//       result: request,
+//     },
+//   };
+// }
